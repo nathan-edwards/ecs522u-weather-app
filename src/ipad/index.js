@@ -5,7 +5,7 @@ export default class Ipad extends React.Component {
 
     render() {
         return (
-            <div className={styles.container} >
+            <div className={styles.container}>
                 Ipad Screen
             </div>
         )

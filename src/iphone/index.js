@@ -1,7 +1,7 @@
 import { Component } from 'react'
 import styles from './iphone.module.css'
 
-import Search from '../component/SearchBar'
+//import Search from '../component/SearchBar'
 
 import { IoMdSettings } from 'react-icons/io'
 
@@ -23,26 +23,25 @@ export default class Iphone extends Component {
     }
 
     fetchWeatherData = async () => {
-        const url = 'http://api.openweathermap.org/data/2.5/weather?q=Paris&appid=175d6199d2d33c42ea32a6c1475c8445'
+        const url = `http://api.openweathermap.org/data/2.5/weather?q=Paris&units=metric&appid=${process.env.REACT_APP_API_KEY}`
         await fetch(url)
             .then(res => res.json())
             .then(res => this.updateState(res))
     }
 
     updateState = (res) => {
-        if (res.cod)
-            this.setState({
-                city: res.name,
-                main: res.weather.main,
-                temp: res.main.temp,
-                feelsLike: res.main.feels_like,
-                pressure: res.main.pressure,
-                humidity: res.main.humidity,
-                minTemp: res.main.temp_min,
-                maxTemp: res.main.temp_max,
-                windSpeed: res.wind.speed,
-                clouds: res.clouds.all
-            })
+        this.setState({
+            city: res.name,
+            main: res.weather.main,
+            temp: res.main.temp,
+            feelsLike: res.main.feels_like,
+            pressure: res.main.pressure,
+            humidity: res.main.humidity,
+            minTemp: res.main.temp_min,
+            maxTemp: res.main.temp_max,
+            windSpeed: res.wind.speed,
+            clouds: res.clouds.all
+        })
     }
 
     render() {
@@ -50,7 +49,6 @@ export default class Iphone extends Component {
             <div className={styles.container}>
                 <div className={styles.header}>
                     <div className={styles.title}>
-                        <Search />
                         <p>{this.state.city}</p>
                     </div>
                     <div className={styles.time}>{this.state.time}</div>
