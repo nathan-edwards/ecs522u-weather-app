@@ -1,0 +1,22 @@
+.container { 
+	display: flex;
+	flex-direction: column;
+	background-color: #c7e7df;
+	color: black;
+	width: 414px;
+	height: 736px;
+	text-align: center;
+	padding-top: 40px;
+	margin: 0 auto;
+}
+
+.header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.title {
+	padding-right: 10;
+}
