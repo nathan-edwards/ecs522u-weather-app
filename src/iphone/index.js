@@ -2,39 +2,65 @@ import { Component } from 'react'
 import styles from './iphone.module.css'
 
 //import Search from '../component/SearchBar'
+import CardList from '../components/CardList'
 
 import { IoMdSettings } from 'react-icons/io'
 
 export default class Iphone extends Component {
 
     state = {
-        city: '',
+        city: 'X',
         units: '',
-        time: '15:00',
-        main: '',
+        time: '00:00',
+        weather: 'X',
         temp: '',
-        feelsLike: '',
-        pressure: '',
-        humidity: '',
-        minTemp: '',
-        maxTemp: '',
-        windSpeed: '',
-        seaLevel: '',
-        clouds: ''
+        feelsLike: '0',
+        pressure: '0',
+        humidity: '0',
+        minTemp: '0',
+        maxTemp: '0',
+        windSpeed: '0',
+        seaLevel: '0',
+        clouds: '',
+        forecast: [
+            { weather: "X", temp: 0, precip: 0 },
+            { weather: "X", temp: 0, precip: 0 },
+            { weather: "X", temp: 0, precip: 0 },
+            { weather: "X", temp: 0, precip: 0 },       
+          ]
     }
 
     fetchCurrentWeatherData = async () => {
-        const url = `http://api.openweathermap.org/data/2.5/weather?q=portsmouth,uk&units=metric&appid=${process.env.REACT_APP_API_KEY}`;
-        fetch(url)
+        const url = `http://api.openweathermap.org/data/2.5/weather?q=portsmouth&units=metric&appid=${process.env.REACT_APP_API_KEY}`;
+        await fetch(url)
             .then(res => res.json())
             .then(data => this.updateState(data))
     }
 
     fetchHourlyWeatherData = async () => {
-        const url = `http://api.openweathermap.org/data/2.5/forecast/hourly?q=portsmouth,uk&units=metric&appid=${process.env.REACT_APP_API_KEY}`;
-        fetch(url)
+        const url = `http://api.openweathermap.org/data/2.5/onecall?lat=50.81957441096404&lon=-1.0890056435577038&exclud=current,minutely,daily,alerts&units=metric&appid=${process.env.REACT_APP_API_KEY}`;
+        await fetch(url)
             .then(res => res.json())
-            .then(data => this.updateState(data))
+            .then(data => this.updateList(data))
+    }
+
+    updateList = (res) => {
+        var list = []
+        var dataLength = 4
+        for (var i = 0; i < dataLength; i++) {
+            // Create a new JavaScript Date object based on the timestamp
+            // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+            var date = new Date(res.hourly[i].dt * 1000);
+            // Hours part from the timestamp
+            var hours = date.getHours();
+            // Minutes part from the timestamp
+            var minutes = "0" + date.getMinutes();
+            const t = {weather: res.hourly[i].weather[0].main, temp: Math.ceil(res.hourly[i].temp), precip: Math.ceil(res.hourly[i].pop), time: (hours + ":" + minutes)};
+            list.push(t)
+        }
+        this.setState({
+            forecast: list
+        })
     }
 
     updateState = (res) => {
@@ -51,6 +77,12 @@ export default class Iphone extends Component {
             windSpeed: Math.ceil(res.wind.speed),
             clouds: res.clouds.all
         })
+    }
+
+    // Calls functions when the app has mounted
+    componentDidMount() {
+        this.fetchHourlyWeatherData();
+        this.fetchCurrentWeatherData();
     }
 
     render() {
@@ -80,7 +112,7 @@ export default class Iphone extends Component {
                 </div>
                 <div className={styles.boxContainer}>
                     <div className={styles.box}></div>
-                    
+                    <CardList forecast={this.state.forecast}/>
                 </div>
                 <button onClick={() => this.fetchCurrentWeatherData()}>Test Current</button>
                 <button onClick={() => this.fetchHourlyWeatherData()}>Test Hourly</button>
