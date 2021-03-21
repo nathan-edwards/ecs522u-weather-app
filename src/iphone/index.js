@@ -8,9 +8,9 @@ import { IoMdSettings } from 'react-icons/io'
 export default class Iphone extends Component {
 
     state = {
-        city: 'London',
-        units: 'metric',
-        time: '15:17',
+        city: '',
+        units: '',
+        time: '15:00',
         main: '',
         temp: '',
         feelsLike: '',
@@ -19,27 +19,36 @@ export default class Iphone extends Component {
         minTemp: '',
         maxTemp: '',
         windSpeed: '',
+        seaLevel: '',
         clouds: ''
     }
 
-    fetchWeatherData = async () => {
-        const url = `http://api.openweathermap.org/data/2.5/weather?q=Paris&units=metric&appid=${process.env.REACT_APP_API_KEY}`
-        await fetch(url)
+    fetchCurrentWeatherData = async () => {
+        const url = `http://api.openweathermap.org/data/2.5/weather?q=portsmouth,uk&units=metric&appid=${process.env.REACT_APP_API_KEY}`;
+        fetch(url)
             .then(res => res.json())
-            .then(res => this.updateState(res))
+            .then(data => this.updateState(data))
+    }
+
+    fetchHourlyWeatherData = async () => {
+        const url = `http://api.openweathermap.org/data/2.5/forecast/hourly?q=portsmouth,uk&units=metric&appid=${process.env.REACT_APP_API_KEY}`;
+        fetch(url)
+            .then(res => res.json())
+            .then(data => this.updateState(data))
     }
 
     updateState = (res) => {
         this.setState({
             city: res.name,
-            main: res.weather.main,
-            temp: res.main.temp,
-            feelsLike: res.main.feels_like,
-            pressure: res.main.pressure,
-            humidity: res.main.humidity,
-            minTemp: res.main.temp_min,
-            maxTemp: res.main.temp_max,
-            windSpeed: res.wind.speed,
+            weather: res.weather[0].main,
+            temp: Math.ceil(res.main.temp),
+            feelsLike: Math.ceil(res.main.feels_like),
+            pressure: Math.ceil(res.main.pressure),
+            humidity: Math.ceil(res.main.humidity),
+            minTemp: Math.ceil(res.main.temp_min),
+            maxTemp: Math.ceil(res.main.temp_max),
+            seaLevel: Math.ceil(res.main.sea_level),
+            windSpeed: Math.ceil(res.wind.speed),
             clouds: res.clouds.all
         })
     }
@@ -59,22 +68,22 @@ export default class Iphone extends Component {
                     <h2>Next 5 days</h2>
                 </div>
                 <div className={styles.main}>
-                    <h1>It's {this.state.main}</h1>
-                    <h3>Temp: {this.state.temp}</h3>
-                    <h4>Feels like: {this.state.feelsLike}</h4>
+                    <h1>It's {this.state.weather}</h1>
+                    <h3>Temp: {this.state.temp}°</h3>
+                    <h4>Feels like: {this.state.feelsLike}°</h4>
                 </div>
                 <div className={styles.extra}>
-                    <div className={styles.wind}>Wind: {this.state.windSpeed}</div>
-                    <div className={styles.rain}>Rain</div>
-                    <div className={styles.minT}>Min: {this.state.minTemp}</div>
-                    <div className={styles.maxT}>Max: {this.state.maxTemp}</div>
+                    <div className={styles.wind}>Wind: {this.state.windSpeed} m/s</div>
+                    <div className={styles.level}>Sea Level: {this.state.seaLevel}</div>
+                    <div className={styles.minT}>Min: {this.state.minTemp}°</div>
+                    <div className={styles.maxT}>Max: {this.state.maxTemp}°</div>
                 </div>
                 <div className={styles.boxContainer}>
                     <div className={styles.box}></div>
-                    <div className={styles.box}></div>
-                    <div className={styles.box}></div>
+                    
                 </div>
-                <button onClick={() => this.fetchWeatherData()}>Test</button>
+                <button onClick={() => this.fetchCurrentWeatherData()}>Test Current</button>
+                <button onClick={() => this.fetchHourlyWeatherData()}>Test Hourly</button>
             </div>
         )
     }

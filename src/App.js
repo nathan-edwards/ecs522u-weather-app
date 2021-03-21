@@ -2,6 +2,7 @@ import React from 'react'
 
 import Iphone from './iphone'
 import Ipad from './ipad'
+require('dotenv').config()
 
 export default class App extends React.Component {
 
