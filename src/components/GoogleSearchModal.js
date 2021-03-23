@@ -4,9 +4,10 @@ import { makeStyles } from "@material-ui/core/styles";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import { useSpring, animated } from "react-spring/web.cjs"; // web.cjs is required for IE 11 support
-import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import GoogleSearchBar from "./GoogleSearchBar";
+import IconButton from "@material-ui/core/IconButton";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import Geocode from "react-geocode"
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -54,15 +55,32 @@ Fade.propTypes = {
 };
 
 export default function GoogleSearchModal() {
+  Geocode.setApiKey("AIzaSyCyMDZZnpCXXOQ1CX7f6pxFx4snZlxPjQA");
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [location, setLocation] = React.useState(null);
 
   const handleOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
+    console.log(location)
+    localStorage.setItem('location', location.value.structured_formatting.main_text);
+    localStorage.setItem('address', location.label)
+    Geocode.fromAddress(location.label).then(
+      (response) => {
+        const { lat, lng } = response.results[0].geometry.location;
+        console.log(lat, lng);
+        localStorage.setItem('lat', lat)
+        localStorage.setItem('lng', lng)
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
     setOpen(false);
+    window.location.reload(false)
   };
 
   return (
@@ -84,7 +102,13 @@ export default function GoogleSearchModal() {
       >
         <Fade in={open}>
           <div className={classes.paper}>
-            <GoogleSearchBar />
+            <GooglePlacesAutocomplete
+              apiKey="AIzaSyCyMDZZnpCXXOQ1CX7f6pxFx4snZlxPjQA"
+              selectProps={{
+                location,
+                onChange: setLocation,
+              }}
+            />
           </div>
         </Fade>
       </Modal>

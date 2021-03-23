@@ -3,7 +3,7 @@ import styles from "./iphone.module.css";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import { Switch, Route, Link, BrowserRouter } from "react-router-dom";
-import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsIcon from "@material-ui/icons/Settings";
 
 import CardList from "../components/CardList";
 import GoogleSearchModal from "../components/GoogleSearchModal";
@@ -39,6 +39,8 @@ export default class Iphone extends Component {
     });
   }
 
+
+
   render() {
     return (
       <div className={styles.container}>
@@ -53,8 +55,6 @@ export default class Iphone extends Component {
           </div>
         </div>
         <div className={styles.day}>
-          {/* <NavTabs />
-           */}
           <BrowserRouter>
             <div className="App">
               <Route
@@ -111,14 +111,14 @@ class Today extends Component {
   };
 
   fetchCurrentWeatherData = async () => {
-    const url = `http://api.openweathermap.org/data/2.5/weather?q=portsmouth&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`;
+    const url = `http://api.openweathermap.org/data/2.5/weather?q=${localStorage.getItem('address')}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`;
     await fetch(url)
       .then((res) => res.json())
       .then((data) => this.updateState(data));
   };
 
   fetchHourlyWeatherData = async () => {
-    const url = `http://api.openweathermap.org/data/2.5/onecall?lat=50.81957441096404&lon=-1.0890056435577038&exclud=current,minutely,daily,alerts&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`;
+    const url = `http://api.openweathermap.org/data/2.5/onecall?lat=${localStorage.getItem('lat')}&lon=${localStorage.getItem('lng')}&exclud=current,minutely,daily,alerts&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`;
     await fetch(url)
       .then((res) => res.json())
       .then((data) => this.updateList(data));
