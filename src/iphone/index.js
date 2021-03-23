@@ -22,7 +22,11 @@ export default class Iphone extends Component {
 
   componentDidMount() {
     const location = localStorage.getItem("location");
-    this.setState({ city: location });
+    if (location) {
+      this.setState({ city: location });
+    } else {
+      this.setState({ city: 'London' })
+    }
     // Timer for clock
     this.intervalID = setInterval(() => this.tick(), 1000);
   }
@@ -45,13 +49,18 @@ export default class Iphone extends Component {
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <div className={styles.title}>
-            <GoogleSearchModal />
-            <p>{this.state.city}</p>
+          <div className={styles.headerChildOne}>
+            <div className={styles.sbar}>
+              <GoogleSearchModal />
+            </div>
           </div>
-          <div className={styles.time}>{this.state.time}</div>
-          <div className={styles.settings}>
-            <SettingsIcon />
+          <div className={styles.headerChildTwo}>
+            <div className={styles.time}>
+              <p>{this.state.time}</p>
+            </div>
+            <div className={styles.settings}>
+              <SettingsIcon />
+            </div>
           </div>
         </div>
         <div className={styles.day}>
@@ -110,15 +119,17 @@ class Today extends Component {
     ],
   };
 
-  fetchCurrentWeatherData = async () => {
-    const url = `http://api.openweathermap.org/data/2.5/weather?q=${localStorage.getItem('address')}&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`;
+  fetchCurrentWeatherData = async (place) => {
+    //const url = `http://api.openweathermap.org/data/2.5/weather?q=portsmouth&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`
+    const url = `http://api.openweathermap.org/data/2.5/weather?q=${place}&units=metric&appid=175d6199d2d33c42ea32a6c1475c8445`;
     await fetch(url)
       .then((res) => res.json())
       .then((data) => this.updateState(data));
   };
 
-  fetchHourlyWeatherData = async () => {
-    const url = `http://api.openweathermap.org/data/2.5/onecall?lat=${localStorage.getItem('lat')}&lon=${localStorage.getItem('lng')}&exclud=current,minutely,daily,alerts&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`;
+  fetchHourlyWeatherData = async (lat, lon) => {
+    //const url = `http://api.openweathermap.org/data/2.5/onecall?lat=0&lon=0&exclud=current,minutely,daily,alerts&units=metric&appid=175d6199d2d33c42ea32a6c1475c8445`
+    const url = `http://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclud=current,minutely,daily,alerts&units=metric&appid=175d6199d2d33c42ea32a6c1475c8445`;
     await fetch(url)
       .then((res) => res.json())
       .then((data) => this.updateList(data));
@@ -166,8 +177,15 @@ class Today extends Component {
 
   // Calls functions when the app has mounted
   componentDidMount() {
-    this.fetchHourlyWeatherData();
-    this.fetchCurrentWeatherData();
+    if (localStorage.getItem('address') === null) {
+      localStorage.setItem('address', 'London, UK')
+      localStorage.setItem('location', 'London')
+      localStorage.setItem('lat', 0)
+      localStorage.setItem('lng', 0)
+    } else {
+      this.fetchHourlyWeatherData(localStorage.getItem('lat'), localStorage.getItem('lng'));
+      this.fetchCurrentWeatherData(localStorage.getItem('address'));
+    }
   }
 
   render() {

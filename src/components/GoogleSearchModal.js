@@ -11,10 +11,11 @@ import Geocode from "react-geocode"
 
 const useStyles = makeStyles((theme) => ({
   modal: {
-    display: "flex",
     alignItems: "top",
     justifyContent: "center",
     paddingTop: "40px",
+    margin: '0 auto',
+    width: '350px'
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
@@ -66,6 +67,9 @@ export default function GoogleSearchModal() {
 
   const handleClose = () => {
     console.log(location)
+    if (location === null || typeof location === 'undefined') {
+      setLocation('London')
+    }
     localStorage.setItem('location', location.value.structured_formatting.main_text);
     localStorage.setItem('address', location.label)
     Geocode.fromAddress(location.label).then(
@@ -86,7 +90,7 @@ export default function GoogleSearchModal() {
   return (
     <div>
       <IconButton aria-label="delete" disableRipple={true} onClick={handleOpen}>
-        <ExpandMoreIcon />
+        {localStorage.getItem('location')} <ExpandMoreIcon />
       </IconButton>
       <Modal
         aria-labelledby="spring-modal-title"
