@@ -119,23 +119,15 @@ class Today extends Component {
     ],
   };
 
-  fetchCurrentWeatherData = async (place) => {
-    //const url = `http://api.openweathermap.org/data/2.5/weather?q=portsmouth&units=metric&appid=${process.env.REACT_APP_OPENWEATHER_API_KEY}`
-    const url = `http://api.openweathermap.org/data/2.5/weather?q=${place}&units=metric&appid=175d6199d2d33c42ea32a6c1475c8445`;
-    await fetch(url)
-      .then((res) => res.json())
-      .then((data) => this.updateState(data));
-  };
-
-  fetchHourlyWeatherData = async (lat, lon) => {
+  fetchWeatherData = async (lat, lon) => {
     //const url = `http://api.openweathermap.org/data/2.5/onecall?lat=0&lon=0&exclud=current,minutely,daily,alerts&units=metric&appid=175d6199d2d33c42ea32a6c1475c8445`
     const url = `http://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclud=current,minutely,daily,alerts&units=metric&appid=175d6199d2d33c42ea32a6c1475c8445`;
     await fetch(url)
       .then((res) => res.json())
-      .then((data) => this.updateList(data));
+      .then((data) => this.updateData(data));
   };
 
-  updateList = (res) => {
+  updateData = (res) => {
     var list = [];
     var dataLength = 4;
     for (var i = 0; i < dataLength; i++) {
@@ -156,22 +148,13 @@ class Today extends Component {
     }
     this.setState({
       forecast: list,
-    });
-  };
-
-  updateState = (res) => {
-    this.setState({
-      city: res.name,
-      weather: res.weather[0].main,
-      temp: Math.ceil(res.main.temp),
-      feelsLike: Math.ceil(res.main.feels_like),
-      pressure: Math.ceil(res.main.pressure),
-      humidity: Math.ceil(res.main.humidity),
-      minTemp: Math.ceil(res.main.temp_min),
-      maxTemp: Math.ceil(res.main.temp_max),
-      seaLevel: Math.ceil(res.main.sea_level),
-      windSpeed: Math.ceil(res.wind.speed),
-      clouds: res.clouds.all,
+      weather: res.current.weather[0].main,
+      temp: Math.ceil(res.current.temp),
+      feelsLike: Math.ceil(res.current.feels_like),
+      pressure: Math.ceil(res.current.pressure),
+      humidity: Math.ceil(res.current.humidity),
+      windSpeed: Math.ceil(res.current.wind_speed),
+      clouds: res.current.clouds,
     });
   };
 
@@ -183,8 +166,7 @@ class Today extends Component {
       localStorage.setItem('lat', 0)
       localStorage.setItem('lng', 0)
     } else {
-      this.fetchHourlyWeatherData(localStorage.getItem('lat'), localStorage.getItem('lng'));
-      this.fetchCurrentWeatherData(localStorage.getItem('address'));
+      this.fetchWeatherData(localStorage.getItem('lat'), localStorage.getItem('lng'));
     }
   }
 
@@ -197,9 +179,6 @@ class Today extends Component {
           <h4>Feels like {this.state.feelsLike}°</h4>
         </div>
         <div className={styles.extra}>
-          <div className={styles.level}>Sea Level: {this.state.seaLevel}</div>
-          <div className={styles.minT}>Min: {this.state.minTemp}°</div>
-          <div className={styles.maxT}>Max: {this.state.maxTemp}°</div>
           <div className={styles.wind}>Wind: {this.state.windSpeed} m/s</div>
         </div>
         <div className={styles.boxContainer}>

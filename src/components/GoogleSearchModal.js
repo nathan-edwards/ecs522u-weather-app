@@ -7,15 +7,15 @@ import { useSpring, animated } from "react-spring/web.cjs"; // web.cjs is requir
 import IconButton from "@material-ui/core/IconButton";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import Geocode from "react-geocode"
+import Geocode from "react-geocode";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
     alignItems: "top",
     justifyContent: "center",
     paddingTop: "40px",
-    margin: '0 auto',
-    width: '350px'
+    margin: "0 auto",
+    width: "350px",
   },
   paper: {
     backgroundColor: theme.palette.background.paper,
@@ -66,31 +66,34 @@ export default function GoogleSearchModal() {
   };
 
   const handleClose = () => {
-    console.log(location)
-    if (location === null || typeof location === 'undefined') {
-      setLocation('London')
+    console.log(location);
+    if (location === null || typeof location === "undefined") {
+      setLocation("London");
     }
-    localStorage.setItem('location', location.value.structured_formatting.main_text);
-    localStorage.setItem('address', location.label)
+    localStorage.setItem(
+      "location",
+      location.value.structured_formatting.main_text
+    );
+    localStorage.setItem("address", location.label);
     Geocode.fromAddress(location.label).then(
       (response) => {
         const { lat, lng } = response.results[0].geometry.location;
         console.log(lat, lng);
-        localStorage.setItem('lat', lat)
-        localStorage.setItem('lng', lng)
+        localStorage.setItem("lat", lat);
+        localStorage.setItem("lng", lng);
       },
       (error) => {
         console.error(error);
       }
     );
     setOpen(false);
-    window.location.reload(false)
+    window.location.reload(false);
   };
 
   return (
     <div>
       <IconButton aria-label="delete" disableRipple={true} onClick={handleOpen}>
-        {localStorage.getItem('location')} <ExpandMoreIcon />
+        <ExpandMoreIcon /> {localStorage.getItem("location")}
       </IconButton>
       <Modal
         aria-labelledby="spring-modal-title"
